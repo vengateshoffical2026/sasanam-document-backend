@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const { connect, mongoose } = require('../db');
+const connect = require('../db');
+const mongoose = require('mongoose');
 const makeUserModel = require('./schema');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'change_this_secret';

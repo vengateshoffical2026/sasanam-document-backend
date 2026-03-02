@@ -5,8 +5,9 @@ const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
 const authRouter = require('./auth/controller');
-const heroStonesRouter = require('./sasanam-sections/controller');
-const { connect } = require('./db');
+const sectionRouter = require('./sasanam-section/routes');
+const booksRouter = require('./sasanam-books/routes');
+const connect = require('./db');
 
 const app = express();
 app.use(cors());
@@ -24,7 +25,7 @@ const swaggerBase = {
       description: 'A simple Express API documented with Swagger'
     }
   },
-  apis: ['./routes/*.js', './auth/*.js', './sasanam-sections/*.js']
+  apis: ['./routes/*.js', './auth/*.js', './sasanam-section/*.js', './sasanam-books/*.js']
 };
 
 app.get('/', (req, res) => {
@@ -32,7 +33,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/auth', authRouter);
-app.use('/hero-stones', heroStonesRouter);
+app.use('/sasanam-section', sectionRouter);
+app.use('/sasanam-books', booksRouter);
 
 function startServer(p, attempts = 5) {
   const server = app.listen(p, () => {

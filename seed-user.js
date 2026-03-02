@@ -1,5 +1,6 @@
 require('dotenv').config();
-const { connect, mongoose } = require('./db');
+const connect = require('./db');
+const mongoose = require('mongoose');
 const makeUserModel = require('./auth/schema');
 
 const username = process.env.SEED_USERNAME || 'test@example.com';
