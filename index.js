@@ -8,9 +8,14 @@ const NodeCache = require('node-cache');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
-const authRouter = require('./auth/controller');
+const authRouter = require('./auth/routes');
+const { authenticateToken } = require('./auth/middleware');
+const subscriptionPaymentRouter = require('./subscriptionPayment/routes');
+const donationPaymentRouter = require('./donationPayment/routes');
+const donationListRouter = require('./donationList/routes');
 const sectionRouter = require('./sasanam-section/routes');
 const booksRouter = require('./sasanam-books/routes');
+const userNewsRouter = require('./userNews/routes');
 const connect = require('./db');
 
 const app = express();
@@ -139,9 +144,32 @@ const swaggerBase = {
       title: 'Sasanam Document API',
       version: '1.0.0',
       description: 'Sasanam Document Management API — Sections & Books'
-    }
+    },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT'
+        }
+      }
+    },
+    security: [
+      {
+        bearerAuth: []
+      }
+    ]
   },
-  apis: ['./routes/*.js', './auth/*.js', './sasanam-section/*.js', './sasanam-books/*.js']
+  apis: [
+    './routes/*.js',
+    './auth/*.js',
+    './subscriptionPayment/*.js',
+    './donationPayment/*.js',
+    './donationList/*.js',
+    './sasanam-section/*.js',
+    './sasanam-books/*.js',
+    './userNews/*.js'
+  ]
 };
 
 // ─── Health Check Endpoint ────────────────────────────────────────────────────
@@ -191,8 +219,12 @@ app.get('/', (req, res) => {
 // ─── API Routes (with caching on GET endpoints) ──────────────────────────────
 
 app.use('/auth', authRouter);
-app.use('/sasanam-section', cacheMiddleware(60), sectionRouter);
-app.use('/sasanam-books', cacheMiddleware(60), booksRouter);
+app.use('/donation-list', donationListRouter);
+app.use('/subscription-payment', authenticateToken, subscriptionPaymentRouter);
+app.use('/donation-payment', authenticateToken, donationPaymentRouter);
+app.use('/sasanam-section', authenticateToken, cacheMiddleware(60), sectionRouter);
+app.use('/sasanam-books', authenticateToken, cacheMiddleware(60), booksRouter);
+app.use('/user-news', authenticateToken, userNewsRouter);
 
 // ─── Cache Invalidation on Mutations ──────────────────────────────────────────
 

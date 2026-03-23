@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const userSchema = new Schema({
-  username: {
+  fullName: {
     type: String,
     required: true,
     unique: true,
@@ -20,6 +20,10 @@ const userSchema = new Schema({
     type: String,
     sparse: true,
     lowercase: true
+  },
+  isSubscribed: {
+    type: Boolean,
+    default: false
   }
 }, { timestamps: true });
 
